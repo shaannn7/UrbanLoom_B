@@ -63,7 +63,7 @@ namespace UrbanLoom_B.Controllers
                 return Ok("Category Updated sucessfully");
             }catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex);
             }
         }
 
