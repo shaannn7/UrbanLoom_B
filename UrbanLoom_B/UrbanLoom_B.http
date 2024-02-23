@@ -1,0 +1,6 @@
+@UrbanLoom_B_HostAddress = http://localhost:5289
+
+GET {{UrbanLoom_B_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
