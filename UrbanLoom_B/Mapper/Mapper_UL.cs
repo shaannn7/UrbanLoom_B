@@ -15,6 +15,9 @@ namespace UrbanLoom_B.Mapper
             CreateMap<Product, ProductViewDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, CategoryViewDto>().ReverseMap();
+            CreateMap<WhishList,WhishLIstDto>().ReverseMap();
+            CreateMap<WhishList, WhishListViewDto>().ReverseMap();
+            CreateMap<Cart,CartViewDto>().ReverseMap();
         }
     }
 }

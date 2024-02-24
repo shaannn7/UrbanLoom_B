@@ -102,7 +102,7 @@ namespace UrbanLoom_B.Services.ProductService
 
         public async Task<List<ProductViewDto>> ProductViewPagination(int page = 1, int pageSize = 10)
         {
-            var products = await _dbContextClass.Products_ul.Include(p=>p.category).Skip(page).Take(pageSize).ToListAsync();
+            var products = await _dbContextClass.Products_ul.Include(p=>p.category).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             var pagepdcts = products.Select(p=> new ProductViewDto 
             {
                 Id = p.Id,
@@ -163,7 +163,7 @@ namespace UrbanLoom_B.Services.ProductService
                     if (Img != null && Img.Length > 0)
                     {
                         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(Img.FileName);
-                        string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Uploads", "Product", fileName);
+                        string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Upload", "Product", fileName);
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {

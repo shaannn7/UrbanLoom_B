@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UrbanLoom_B.Entity.Dto;
 using UrbanLoom_B.Services.CategoryService;
@@ -30,6 +31,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("CATEGORY")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetCatById(int id)
         {
             try
@@ -42,6 +44,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpPost("ADD CATEGORY")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddCateg([FromBody] CategoryDto categoryDto)
         {
             try
@@ -55,6 +58,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Update(int id,[FromBody] CategoryDto categoryDto)
         {
             try
@@ -68,6 +72,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(int id)
         {
             try

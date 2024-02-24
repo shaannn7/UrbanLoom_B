@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using UrbanLoom_B.Entity.Dto;
@@ -59,7 +60,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("PAGE")]
-        public async Task<ActionResult> GetProductByPage(int page , int pagesize)
+        public async Task<ActionResult> GetProductByPage(int page = 1 , int pagesize = 10)
         {
             try
             {
@@ -86,12 +87,13 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpPost("ADD PRODUCT")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddProduct([FromForm] ProductDto product, IFormFile Img)
         {
             try
             {
                 await _product.AddProduct(product, Img);
-                return Ok();
+                return Ok("Product Added Sucessfully");
             }catch (Exception e)
             {
                 return StatusCode(500,e.Message);
@@ -99,12 +101,13 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpPut("UPDATE PRODUCT")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateProduct(int id,[FromForm] ProductDto product, IFormFile Img)
         {
             try
             {
                 await _product.UpdateProduct(id, product, Img);
-                return Ok();
+                return Ok("Product Updated Sucessfully");
             }catch(Exception e)
             {
                 return StatusCode(500,e.Message);
@@ -112,12 +115,13 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpDelete("DELETE PRODUCT")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
             try
             {
                 await _product.DeleteProduct(id);
-                return Ok();
+                return Ok("Product Deleted Sucessfully");
             }catch(Exception ex)
             {
                 return StatusCode(500,ex.Message);
