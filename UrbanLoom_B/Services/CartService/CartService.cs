@@ -30,7 +30,7 @@ namespace UrbanLoom_B.Services.CartService
                 var userID = _jwt.GetUserIdFromToken(token);
                 if (userID == null)
                 {
-                    throw new Exception("user id not valid");
+                    throw new Exception("user id is not valid");
                 }
 
                 var user = await _dbContextClass.Cart_ul.Include(i => i.cartitem).ThenInclude(p => p.products).FirstOrDefaultAsync(I => I.UserId == userID);
@@ -50,7 +50,7 @@ namespace UrbanLoom_B.Services.CartService
                 return new List<CartViewDto>();
             }
             catch (Exception e)
-            {
+            { 
                 throw new Exception(e.Message);
             }
         }
