@@ -101,7 +101,7 @@ namespace UrbanLoom_B.Services.CartService
             var userID = _jwt.GetUserIdFromToken(token);
             if (userID == null)
             {
-                throw new Exception("user id not valid");
+                throw new Exception("user id is not valid");
             }
 
             var user = await _dbContextClass.Users_ul.Include(c => c.cart).ThenInclude(ci => ci.cartitem).FirstOrDefaultAsync(id=>id.Id==userID);
@@ -122,7 +122,7 @@ namespace UrbanLoom_B.Services.CartService
             var userID = _jwt.GetUserIdFromToken(token);
             if (userID == null)
             {
-                throw new Exception("user id not valid");
+                throw new Exception("user id is not valid");
             }
 
             var user = await _dbContextClass.Users_ul.Include(c => c.cart).ThenInclude(ci => ci.cartitem).FirstOrDefaultAsync(id => id.Id == userID);
@@ -149,7 +149,7 @@ namespace UrbanLoom_B.Services.CartService
             var userID = _jwt.GetUserIdFromToken(token);
             if (userID == null)
             {
-                throw new Exception("user id not valid");
+                throw new Exception("user id  is not valid");
             }
             var user = await _dbContextClass.Users_ul.Include(c => c.cart).ThenInclude(ci => ci.cartitem).FirstOrDefaultAsync(id => id.Id == userID);
             var product = await _dbContextClass.Products_ul.FirstOrDefaultAsync(i => i.Id == productId);
