@@ -11,8 +11,6 @@ namespace UrbanLoom_B.Entity.Dto
         public double TotalAmount { get; set; }
 
         [NotMapped]
-        public string TransactionId { get; set; }
-        [NotMapped]
         public string OrderId { get; set; }
     }
 }

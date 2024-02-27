@@ -18,9 +18,9 @@ namespace UrbanLoom_B.Services.CartService
         public CartService(IConfiguration configuration, IJwt jwt, DbContextClass dbContextClass)
         {
             _configuration = configuration;
-            _jwt = jwt;
             _dbContextClass = dbContextClass;
             HostUrl = _configuration["HostUrl:url"];
+            _jwt = jwt;
         }
 
         public async Task<List<CartViewDto>> GetCartItems(string token)
@@ -38,7 +38,7 @@ namespace UrbanLoom_B.Services.CartService
                 {
                     var cartitwms = user.cartitem.Select(i => new CartViewDto
                     {
-                        ProductId = i.Id,
+                        ProductId = i.ProductId,
                         ProductName = i.products.ProductName,
                         Quantity = i.Quantity,
                         Price = i.products.Price,
@@ -87,7 +87,8 @@ namespace UrbanLoom_B.Services.CartService
                     {
                         CartId = user.cart.Id,
                         ProductId = productId,
-                        Quantity = 1
+                        Quantity = 1,
+                       
                     };
                     _dbContextClass.Cartitem_ul.Add(newCartItem);
                 }

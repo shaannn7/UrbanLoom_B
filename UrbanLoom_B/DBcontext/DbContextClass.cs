@@ -37,7 +37,7 @@ namespace UrbanLoom_B.DBcontext
                 .HasOne(u => u.cart)
                 .WithOne(c => c.user)
                 .HasForeignKey<Cart>(Ui => Ui.UserId);
-
+ 
             modelBuilder.Entity<Cart>()
                 .HasMany(c => c.cartitem)
                 .WithOne(Ci => Ci.cart)
