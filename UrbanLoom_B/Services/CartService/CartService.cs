@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 using UrbanLoom_B.DBcontext;
+using UrbanLoom_B.Dto.CartDtos;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 using UrbanLoom_B.JWT;
 
 namespace UrbanLoom_B.Services.CartService

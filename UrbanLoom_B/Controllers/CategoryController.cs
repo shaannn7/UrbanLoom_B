@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using UrbanLoom_B.Entity.Dto;
+using UrbanLoom_B.Dto.CategoryDto;
 using UrbanLoom_B.Services.CategoryService;
 
 namespace UrbanLoom_B.Controllers

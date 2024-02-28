@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.Xml;
 using UrbanLoom_B.DBcontext;
+using UrbanLoom_B.Dto.WhishListDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 using UrbanLoom_B.JWT;
 
 namespace UrbanLoom_B.Services.WhishListService

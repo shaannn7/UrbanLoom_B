@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using UrbanLoom_B.DBcontext;
+using UrbanLoom_B.Dto.CartDtos;
+using UrbanLoom_B.Dto.OrderDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 using UrbanLoom_B.JWT;
 
 namespace UrbanLoom_B.Services.OrderService
@@ -29,41 +30,38 @@ namespace UrbanLoom_B.Services.OrderService
         public async Task<bool> CreateOrderFromCart(string token, OrderRequestDto orderRequest)
         {
            
-                int UserId = _jwt.GetUserIdFromToken(token);
-                if(UserId == null)
-                {
-                    throw new Exception("user id is not valid");
-                }
+            int UserId = _jwt.GetUserIdFromToken(token);
+            if(UserId == null)
+            {
+                throw new Exception("user id is not valid");
+            }
 
-                var cartorder = await _dbContextClass.Cart_ul.Include(ci=>ci.cartitem).ThenInclude(p=>p.products).FirstOrDefaultAsync(i=>i.UserId == UserId);
-                if (cartorder == null)
+            var cartorder = await _dbContextClass.Cart_ul.Include(ci=>ci.cartitem).ThenInclude(p=>p.products).FirstOrDefaultAsync(i=>i.UserId == UserId);
+            if (cartorder == null)
+            {
+                throw new Exception("Cart not found for the user.");
+            }
+            var order = new Order
+            {
+                userId = UserId,
+                OrderDate = DateTime.Now,
+                CustomerCity = orderRequest.CustomerCity,
+                CustomerEmail = orderRequest.CustomerEmail,
+                CustomerPhone = orderRequest.CustomerPhone,
+                HomeAddress = orderRequest.HomeAddress,
+                CustomerName = orderRequest.CustomerName,
+                OrderStatus = "Pending",
+                OrderItems = cartorder.cartitem.Select(ci => new OrderItem
                 {
-                   throw new Exception("Cart not found for the user.");
-                }
-                var order = new Order
-                {
-                    userId = UserId,
-                    OrderDate = DateTime.Now,
-                    CustomerCity = orderRequest.CustomerCity,
-                    CustomerEmail = orderRequest.CustomerEmail,
-                    CustomerPhone = orderRequest.CustomerPhone,
-                    HomeAddress = orderRequest.HomeAddress,
-                    CustomerName = orderRequest.CustomerName,
-                    OrderStatus = "pending",
-                    OrderItems = cartorder.cartitem.Select(ci => new OrderItem
-                    {
-                        ProductId = ci.ProductId,
-                        Quantity = ci.Quantity,
-                        TotalPrice = ci.Quantity * ci.products.Price
-                    }).ToList()
-                };
-
-                await _dbContextClass.Orders_ul.AddAsync(order);
-                _dbContextClass.Cart_ul.Remove(cartorder);
-                await _dbContextClass.SaveChangesAsync();
-                return true;
-
-          
+                    ProductId = ci.ProductId,
+                    Quantity = ci.Quantity,
+                    TotalPrice = ci.Quantity * ci.products.Price
+                }).ToList()
+            };
+            await _dbContextClass.Orders_ul.AddAsync(order);
+            _dbContextClass.Cart_ul.Remove(cartorder);
+            await _dbContextClass.SaveChangesAsync();
+            return true;
         }
 
         ///   BUY FROM SHOP ///
@@ -90,7 +88,6 @@ namespace UrbanLoom_B.Services.OrderService
                     CustomerName = orderRequest.CustomerName,
                     OrderStatus = "Pending",
                     OrderItems = new List<OrderItem>()
-
                 };
                 _dbContextClass.Orders_ul.Add(order);
                 await _dbContextClass.SaveChangesAsync();
@@ -134,32 +131,32 @@ namespace UrbanLoom_B.Services.OrderService
 
         public async Task<OrderAdminDetailViewDto> GetDetailedOrderDetailsByOrderID(int orderid)
         {
-                var order = await _dbContextClass.Orders_ul.Include(oi => oi.OrderItems).ThenInclude(p=>p.products).FirstOrDefaultAsync(o=>o.Id == orderid);
-                if( order != null)
-                {
-                    var orderdetail = new OrderAdminDetailViewDto
-                    {
-                        Id = order.Id,
-                        CustomerEmail = order.CustomerEmail,
-                        CustomerName = order.CustomerName,
-                        CustomerCity = order.CustomerCity,
-                        CustomerPhone = order.CustomerPhone,
-                        HomeAddress = order.HomeAddress,
-                        OrderStatus = order.OrderStatus,
-                        OrderDate = order.OrderDate,
-                        OrderProducts = order.OrderItems.Select(oi => new CartViewDto
-                        {
-                            ProductId = oi.ProductId,
-                            ProductName = oi.products.ProductName,
-                            Price = oi.products.Price,
-                            Quantity = oi.Quantity,
-                            TotalAmount = oi.TotalPrice,
-                            ProductImage = HostUrl+oi.products.ProductImage,
-                        }).ToList()
-                    };
-                    return orderdetail;
-                }
-                return new OrderAdminDetailViewDto();            
+            var order = await _dbContextClass.Orders_ul.Include(oi => oi.OrderItems).ThenInclude(p=>p.products).FirstOrDefaultAsync(o=>o.Id == orderid);
+            if( order != null)
+            {
+               var orderdetail = new OrderAdminDetailViewDto
+               {
+                   Id = order.Id,
+                   CustomerEmail = order.CustomerEmail,
+                   CustomerName = order.CustomerName,
+                   CustomerCity = order.CustomerCity,
+                   CustomerPhone = order.CustomerPhone,
+                   HomeAddress = order.HomeAddress,
+                   OrderStatus = order.OrderStatus,
+                   OrderDate = order.OrderDate,
+                   OrderProducts = order.OrderItems.Select(oi => new CartViewDto
+                   {
+                       ProductId = oi.ProductId,
+                       ProductName = oi.products.ProductName,
+                       Price = oi.products.Price,
+                       Quantity = oi.Quantity,
+                       TotalAmount = oi.TotalPrice,
+                       ProductImage = HostUrl+oi.products.ProductImage,
+                   }).ToList()
+               };
+               return orderdetail;
+            }
+            return new OrderAdminDetailViewDto();            
         }
         public async Task<List<OrderViewDto>> OrderDetailsByUserId(int userId)
         {
@@ -188,54 +185,29 @@ namespace UrbanLoom_B.Services.OrderService
 
         public async Task<int> GetTotalOrders()
         {
-            var orders = await _dbContextClass.Orders_ul.Include(oi => oi.OrderItems).ToListAsync();
-            if(orders != null)
-            {
-                var order = orders.SelectMany(oi => oi.OrderItems);
-                var totorder = order.Sum(o => o.Quantity);
-                return totorder;
-            }
-            return 0;
+            var orders = await _dbContextClass.Orders_ul.CountAsync();
+           return orders;
         }
         public async Task<decimal> GetTotalRevenue()
         {
-            var order = await _dbContextClass.Orders_ul.Include(oi => oi.OrderItems).ToListAsync();
-            if (order != null)
-            {
-                var orderdata = order.SelectMany(oi => oi.OrderItems);
-                var total = orderdata.Sum(t => t.TotalPrice);
-                return total;
-            }
-            return 0;
+            var order = await _dbContextClass.Orderitems_ul.SumAsync(x=>x.TotalPrice);
+            return order;
         }
 
         public async Task<int> GetTodaysTotalOrders()
         {
             DateTime todayStart = DateTime.Today;
             DateTime todayEnd = todayStart.AddDays(1).AddTicks(-1);
-            var orders = await _dbContextClass.Orders_ul.Include(oi=>oi.OrderItems).Where(o => o.OrderDate >= todayStart && o.OrderDate <= todayEnd).ToListAsync();
-
-            if(orders != null )
-            {
-                var order = orders.SelectMany(_ => _.OrderItems);
-                var totorder = order.Sum(_ => _.Quantity);
-                return totorder;
-            }
-            return 0;
+            var orders = await _dbContextClass.Orders_ul.Where(o => o.OrderDate >= todayStart && o.OrderDate <= todayEnd).CountAsync();
+            return orders;
         }
 
         public async Task<decimal> GetTodaysTotalRevenue()
         {
             DateTime todayStart = DateTime.Today;
             DateTime todayEnd = todayStart.AddDays(1).AddTicks(-1);
-            var order = await _dbContextClass.Orders_ul.Include(oi => oi.OrderItems).Where(o => o.OrderDate >= todayStart && o.OrderDate <= todayEnd).ToListAsync();
-            if (order != null)
-            {
-                var orderdata = order.SelectMany(oi => oi.OrderItems);
-                var total = orderdata.Sum(t => t.TotalPrice);
-                return total;
-            }
-            return 0;
+            var Revenue = await _dbContextClass.Orderitems_ul.Where(o => o.order.OrderDate >= todayStart && o.order.OrderDate <= todayEnd).SumAsync(x=>x.TotalPrice);
+            return Revenue;
         }
 
         public async Task<bool> UpdateOrderStatus(int orderID, OrderUpdateDto orderUpdate)

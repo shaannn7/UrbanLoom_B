@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UrbanLoom_B.Entity.Dto
+namespace UrbanLoom_B.Dto.WhishListDto
 {
     public class WhishListViewDto
     {

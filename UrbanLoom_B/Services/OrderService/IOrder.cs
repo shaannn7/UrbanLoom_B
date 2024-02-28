@@ -1,17 +1,17 @@
-﻿using UrbanLoom_B.Entity.Dto;
+﻿using UrbanLoom_B.Dto.OrderDto;
 
 namespace UrbanLoom_B.Services.OrderService
 {
     public interface IOrder
     {
 
-        ///CART///
+        /// BUY FROM CART ///
         Task<bool> CreateOrderFromCart(string token, OrderRequestDto orderRequest);
 
-        ///SHOP///
+        /// BUY FROM SHOP ///
         Task<bool> CreateOrderFromShop(string token , OrderRequestDto orderRequest , int productid);
 
-        ///ADMIN///
+        /// ADMIN ///
         Task<List<OrderAdminView>> AdminGetAllOrders();
         Task<OrderAdminDetailViewDto> GetDetailedOrderDetailsByOrderID(int orderid);
         Task<List<OrderViewDto>> OrderDetailsByUserId(int userId);
@@ -19,7 +19,6 @@ namespace UrbanLoom_B.Services.OrderService
         Task<decimal> GetTotalRevenue();
         Task<int> GetTodaysTotalOrders();
         Task<decimal> GetTodaysTotalRevenue();
-
         Task<bool> UpdateOrderStatus(int orderID , OrderUpdateDto orderUpdate);
     }
 }

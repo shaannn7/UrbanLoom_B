@@ -1,7 +1,11 @@
 ﻿
 using AutoMapper;
+using UrbanLoom_B.Dto.CartDtos;
+using UrbanLoom_B.Dto.CategoryDto;
+using UrbanLoom_B.Dto.ProductDto;
+using UrbanLoom_B.Dto.RegisterDto;
+using UrbanLoom_B.Dto.WhishListDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 
 namespace UrbanLoom_B.Mapper
 {

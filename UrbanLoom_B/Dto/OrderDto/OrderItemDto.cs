@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UrbanLoom_B.Entity.Dto
+﻿namespace UrbanLoom_B.Dto.OrderDto
 {
-    public class CartViewDto
+    public class OrderItemDto
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }

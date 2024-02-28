@@ -1,4 +1,6 @@
-﻿namespace UrbanLoom_B.Entity.Dto
+﻿using UrbanLoom_B.Dto.CartDtos;
+
+namespace UrbanLoom_B.Dto.OrderDto
 {
     public class OrderAdminDetailViewDto
     {

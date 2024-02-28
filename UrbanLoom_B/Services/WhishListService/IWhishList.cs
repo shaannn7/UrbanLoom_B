@@ -1,4 +1,4 @@
-﻿using UrbanLoom_B.Entity.Dto;
+﻿using UrbanLoom_B.Dto.WhishListDto;
 
 namespace UrbanLoom_B.Services.WhishListService
 {

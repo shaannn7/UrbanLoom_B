@@ -1,4 +1,4 @@
-﻿namespace UrbanLoom_B.Entity.Dto
+﻿namespace UrbanLoom_B.Dto.ProductDto
 {
     public class ProductViewDto
     {

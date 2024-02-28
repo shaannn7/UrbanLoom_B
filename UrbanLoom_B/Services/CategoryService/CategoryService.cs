@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using UrbanLoom_B.DBcontext;
+using UrbanLoom_B.Dto.CategoryDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 
 namespace UrbanLoom_B.Services.CategoryService
 {

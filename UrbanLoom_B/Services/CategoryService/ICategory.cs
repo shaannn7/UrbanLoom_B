@@ -1,4 +1,4 @@
-﻿using UrbanLoom_B.Entity.Dto;
+﻿using UrbanLoom_B.Dto.CategoryDto;
 
 namespace UrbanLoom_B.Services.CategoryService
 {
@@ -6,7 +6,6 @@ namespace UrbanLoom_B.Services.CategoryService
     {
         Task<List<CategoryViewDto>> GetCategories();
         Task<CategoryViewDto> GetCategoryById(int id);
-
         Task AddCategory(CategoryDto category);
         Task UpdateCategory(int id, CategoryDto categoryDto);
         Task DeleteCategory(int id);

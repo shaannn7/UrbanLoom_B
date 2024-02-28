@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
-using UrbanLoom_B.Entity.Dto;
+using UrbanLoom_B.Dto.ProductDto;
 using UrbanLoom_B.Services.ProductService;
 
 namespace UrbanLoom_B.Controllers
@@ -87,7 +87,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpPost("ADD PRODUCT")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> AddProduct([FromForm] ProductDto product, IFormFile Img)
         {
             try

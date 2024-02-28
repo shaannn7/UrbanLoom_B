@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using UrbanLoom_B.DBcontext;
+using UrbanLoom_B.Dto.LoginDto;
+using UrbanLoom_B.Dto.RegisterDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 using UrbanLoom_B.Mapper;
 
 namespace UrbanLoom_B.Services.UserService
@@ -33,8 +34,13 @@ namespace UrbanLoom_B.Services.UserService
             var user = _Mapper.Map<User>(registerDto);
             _dbContextClass.Users_ul.Add(user);
             await _dbContextClass.SaveChangesAsync();
-
             return true;
+        }
+
+        public async Task<User> Login(LoginDto loginDto)
+        {
+            var ExstUser = await _dbContextClass.Users_ul.FirstOrDefaultAsync(u => u.Mail == loginDto.Mail);
+            return ExstUser;
         }
 
         public async Task<List<UserViewDto>> GetUsers()
@@ -49,12 +55,6 @@ namespace UrbanLoom_B.Services.UserService
             var user = await _dbContextClass.Users_ul.FirstOrDefaultAsync(u=>u.Id == id);
             var userr = _Mapper.Map<UserViewDto>(user);
             return userr;
-        }
-
-        public async Task<User> Login(LoginDto loginDto)
-        {
-            var ExstUser = await _dbContextClass.Users_ul.FirstOrDefaultAsync(u=>u.Mail==loginDto.Mail);
-            return ExstUser;
         }
 
         public async Task<bool> BlockUser(int uID)

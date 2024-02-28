@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using UrbanLoom_B.DBcontext;
+using UrbanLoom_B.Dto.ProductDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace UrbanLoom_B.Services.ProductService

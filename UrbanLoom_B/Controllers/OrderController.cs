@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using UrbanLoom_B.Entity.Dto;
+using UrbanLoom_B.Dto.OrderDto;
 using UrbanLoom_B.Services.OrderService;
 
 namespace UrbanLoom_B.Controllers
@@ -33,8 +33,8 @@ namespace UrbanLoom_B.Controllers
                     return BadRequest();
                 }
 
-                var orderstatus =  await _order.CreateOrderFromCart(jwt, orderRequestDto);
-                return Ok(orderstatus);
+                await _order.CreateOrderFromCart(jwt, orderRequestDto);
+                return Ok("Items from cart Ordered Sucessfully");
             }catch(Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -59,7 +59,7 @@ namespace UrbanLoom_B.Controllers
                 }
 
                 var orderstatus = await _order.CreateOrderFromShop(jwt, orderRequestDto , productid);
-                return Ok();
+                return Ok("Item Ordered Sucessfully");
             }
             catch (Exception ex)
             {
@@ -71,6 +71,7 @@ namespace UrbanLoom_B.Controllers
 
 
         [HttpGet("GET ALL ORDERS")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AdminnGetAllOrders()
         {
             var Allorders = await _order.AdminGetAllOrders();
@@ -82,6 +83,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("GET DETAIL OF A SINGLE ORDER")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AdminGetOrderDetails(int orderid)
         {
             var OrderDetails = await _order.GetDetailedOrderDetailsByOrderID(orderid);
@@ -93,6 +95,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("USER ORDERS")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UserOrder(int userid)
         {
             var order = await _order.OrderDetailsByUserId(userid);
@@ -104,6 +107,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("TOTAL ORDERS")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> TotalOrders()
         {
             var order = await _order.GetTotalOrders();
@@ -115,6 +119,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("TOTAL REVENUE")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> TotalRevenue()
         {
             var tot = await _order.GetTotalRevenue();
@@ -126,6 +131,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("TODAYS TOTAL ORDERS")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> TodaysTotalOrders()
         {
             var tot = await _order.GetTodaysTotalOrders();
@@ -137,6 +143,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("TODAYS TOTAL REVENUE")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> TodaysTotalRevenue()
         {
             var tot = await _order.GetTodaysTotalRevenue();
@@ -148,6 +155,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpPut("UPDATE ORDER STATUS")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> OrderUpdate(int orderid, OrderUpdateDto orderUpdateDto)
         {
             var order = await _order.UpdateOrderStatus(orderid, orderUpdateDto);

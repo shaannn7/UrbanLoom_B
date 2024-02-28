@@ -1,4 +1,4 @@
-﻿using UrbanLoom_B.Entity.Dto;
+﻿using UrbanLoom_B.Dto.ProductDto;
 
 namespace UrbanLoom_B.Services.ProductService
 {

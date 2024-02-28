@@ -7,8 +7,9 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using UrbanLoom_B.Dto.LoginDto;
+using UrbanLoom_B.Dto.RegisterDto;
 using UrbanLoom_B.Entity;
-using UrbanLoom_B.Entity.Dto;
 using UrbanLoom_B.Services.UserService;
 
 namespace UrbanLoom_B.Controllers
@@ -89,7 +90,7 @@ namespace UrbanLoom_B.Controllers
 
         [HttpGet("USER = {id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult>GetUser(int id)
+        public async Task<ActionResult>GetUserbyID(int id)
         {
             try
             {
