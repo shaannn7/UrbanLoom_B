@@ -32,7 +32,6 @@ namespace UrbanLoom_B.Controllers
                 {
                     return BadRequest();
                 }
-
                 await _order.CreateOrderFromCart(jwt, orderRequestDto);
                 return Ok("Items from cart Ordered Sucessfully");
             }catch(Exception ex)
@@ -41,7 +40,7 @@ namespace UrbanLoom_B.Controllers
             }
         }
 
-        ///   BUY FROM CART ///
+        ///   BUY FROM SHOP ///
        
         [HttpPost("PLACE ORDER (SHOP)")]
         [Authorize]
@@ -68,7 +67,6 @@ namespace UrbanLoom_B.Controllers
         }
 
         /// ADMIN ///
-
 
         [HttpGet("GET ALL ORDERS")]
         [Authorize(Roles = "Admin")]
