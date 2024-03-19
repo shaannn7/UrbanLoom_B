@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Razorpay.Api;
 using UrbanLoom_B.DBcontext;
 using UrbanLoom_B.Dto.CartDtos;
 using UrbanLoom_B.Dto.OrderDto;
 using UrbanLoom_B.Entity;
 using UrbanLoom_B.JWT;
+using Order = UrbanLoom_B.Entity.Order;
 
 namespace UrbanLoom_B.Services.OrderService
 {
@@ -26,6 +29,47 @@ namespace UrbanLoom_B.Services.OrderService
         }
 
 
+        public async Task<string> OrderCreate(long price)
+        {
+            Dictionary<string, object> input = new Dictionary<string, object>();
+            Random random = new Random();
+            string TrasactionId = random.Next(0, 1000).ToString();
+            input.Add("amount", Convert.ToDecimal(price) * 100);
+            input.Add("currency", "INR");
+            input.Add("receipt", TrasactionId);
+
+            string key = _configuration["Razorpay:KeyId"];
+            string secret = _configuration["Razorpay:KeySecret"];
+
+            RazorpayClient razorpay = new RazorpayClient(key, secret);
+
+            Razorpay.Api.Order orderrazorpay = razorpay.Order.Create(input);
+            var OrderId = orderrazorpay["id"].ToString();
+
+            return OrderId;
+        }
+
+        public bool Payment(RazorpayDto razorpay)
+        {
+            if (razorpay == null ||
+                razorpay.razorpay_payment_id == null ||
+                razorpay.razorpay_order_id == null ||
+                razorpay.razorpay_signature == null)
+            {
+                return false;
+            }
+
+            RazorpayClient client = new RazorpayClient(_configuration["Razorpay:KeyId"], _configuration["Razorpay:KeySecret"]);
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            attributes.Add("razorpay_payment_id", razorpay.razorpay_payment_id);
+            attributes.Add("razorpay_order_id", razorpay.razorpay_order_id);
+            attributes.Add("razorpay_signature", razorpay.razorpay_signature);
+
+            Utils.verifyPaymentSignature(attributes);
+
+            return true;
+        }
+
         ///   BUY FROM CART ///
         public async Task<bool> CreateOrderFromCart(string token, OrderRequestDto orderRequest)
         {
@@ -35,12 +79,11 @@ namespace UrbanLoom_B.Services.OrderService
             {
                 throw new Exception("user id is not valid");
             }
-
-            var cartorder = await _dbContextClass.Cart_ul.Include(ci=>ci.cartitem).ThenInclude(p=>p.products).FirstOrDefaultAsync(i=>i.UserId == UserId);
-            if (cartorder == null)
+            if (orderRequest.TransactionId == null && orderRequest.OrderString == null)
             {
-                throw new Exception("Cart not found for the user.");
+                return false;
             }
+            var cartorder = await _dbContextClass.Cart_ul.Include(ci=>ci.cartitem).ThenInclude(p=>p.products).FirstOrDefaultAsync(i=>i.UserId == UserId);
             var order = new Order
             {
                 userId = UserId,
@@ -50,6 +93,8 @@ namespace UrbanLoom_B.Services.OrderService
                 CustomerPhone = orderRequest.CustomerPhone,
                 HomeAddress = orderRequest.HomeAddress,
                 CustomerName = orderRequest.CustomerName,
+                TransactionId = orderRequest.TransactionId,
+                OrderString = orderRequest.OrderString,
                 OrderStatus = "Pending",
                 OrderItems = cartorder.cartitem.Select(ci => new OrderItem
                 {
@@ -58,58 +103,50 @@ namespace UrbanLoom_B.Services.OrderService
                     TotalPrice = ci.Quantity * ci.products.Price
                 }).ToList()
             };
-            await _dbContextClass.Orders_ul.AddAsync(order);
+            _dbContextClass.Orders_ul.AddAsync(order);
             _dbContextClass.Cart_ul.Remove(cartorder);
             await _dbContextClass.SaveChangesAsync();
             return true;
         }
 
-        ///   BUY FROM SHOP ///
-
-        public async Task<bool> CreateOrderFromShop(string token, OrderRequestDto orderRequest , int productid)
+        public async Task<List<OrderViewDto>> GetOrderDtails(string token)
         {
-            try
-            {
-                int UserID = _jwt.GetUserIdFromToken(token);
-                if (UserID == null)
-                {
-                    throw new Exception("user id is not valid");
+            int userId = _jwt.GetUserIdFromToken(token);
 
+            if (userId == null)
+            {
+                throw new Exception("user id not valid");
+            }
+
+            var orders = await _dbContextClass.Orders_ul
+                .Include(o => o.OrderItems)
+                .ThenInclude(p => p.products)
+                .Where(o => o.userId == userId)
+                .ToListAsync();
+
+            var orderDetails = new List<OrderViewDto>();
+
+            foreach (var order in orders)
+            {
+                foreach (var orderItem in order.OrderItems)
+                {
+                    var orderDetail = new OrderViewDto
+                    {
+                        Id = orderItem.Id,
+                        OrderDate = order.OrderDate,
+                        ProductName = orderItem.products.ProductName,
+                        ProductImage = HostUrl + orderItem.products.ProductImage,
+                        Quantity = orderItem.Quantity,
+                        TotalPrice = orderItem.TotalPrice,
+                        OrderId = order.OrderString,
+                        OrderStatus = order.OrderStatus
+                    };
+
+                    orderDetails.Add(orderDetail);
                 }
-                var productorder = await _dbContextClass.Products_ul.FirstOrDefaultAsync(i=>i.Id == productid);
-                var order = new Order
-                {
-                    userId = UserID,
-                    OrderDate = DateTime.Now,
-                    CustomerCity = orderRequest.CustomerCity,
-                    CustomerEmail = orderRequest.CustomerEmail,
-                    CustomerPhone = orderRequest.CustomerPhone,
-                    HomeAddress = orderRequest.HomeAddress,
-                    CustomerName = orderRequest.CustomerName,
-                    OrderStatus = "Pending",
-                    OrderItems = new List<OrderItem>()
-                };
-                _dbContextClass.Orders_ul.Add(order);
-                await _dbContextClass.SaveChangesAsync();
-
-                var orderitem = new OrderItem
-                {
-                    OrderId = order.Id,
-                    ProductId = productid,
-                    Quantity = 1,
-                    TotalPrice = productorder.Price
-                };
-                await _dbContextClass.Orderitems_ul.AddAsync(orderitem);
-                await _dbContextClass.SaveChangesAsync();
-                return true;
-
             }
-            catch(Exception ex)
-            {
-                return false;
-            }
+            return orderDetails;
         }
-
         ///  ADMIN ///
         public async Task<List<OrderAdminView>> AdminGetAllOrders()
         {
@@ -125,6 +162,7 @@ namespace UrbanLoom_B.Services.OrderService
                 CustomerName = o.CustomerName,
                 OrderStatus = o.OrderStatus,
                 OrderDate = o.OrderDate,
+                TransactionId = o.TransactionId,
             }).ToList();
             return allorders;
         }
@@ -144,6 +182,7 @@ namespace UrbanLoom_B.Services.OrderService
                    HomeAddress = order.HomeAddress,
                    OrderStatus = order.OrderStatus,
                    OrderDate = order.OrderDate,
+                   TransactionId = order.TransactionId,
                    OrderProducts = order.OrderItems.Select(oi => new CartViewDto
                    {
                        ProductId = oi.ProductId,
@@ -173,7 +212,7 @@ namespace UrbanLoom_B.Services.OrderService
                         ProductName = data.products.ProductName,
                         ProductImage = data.products.ProductImage,
                         Quantity = data.Quantity,
-                        OrderId = data.OrderId,
+                        OrderId = data.OrderId.ToString(),
                         TotalPrice = data.TotalPrice,
                         OrderStatus = order.OrderStatus,
                     };

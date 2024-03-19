@@ -129,11 +129,11 @@ namespace UrbanLoom_B.Services.ProductService
                     {
                         await Img.CopyToAsync(stream);
                     }
-                    ProductImage = "/Uploads/Product/" + fileName;
+                    ProductImage = "/Upload/Product/" + fileName;
                 }
                 else
                 {
-                    ProductImage = "/Uploads/common/noimage.png";
+                    ProductImage = "/Upload/common/noimage.png";
                 }
 
                 var prodimg = _mapper.Map<Product>(product);
@@ -170,7 +170,7 @@ namespace UrbanLoom_B.Services.ProductService
                             await Img.CopyToAsync(stream);
                         }
 
-                        prod.ProductImage = "/Uploads/Product/" + fileName;
+                        prod.ProductImage = "/Upload/Product/" + fileName;
                     }
 
                     await _dbContextClass.SaveChangesAsync();

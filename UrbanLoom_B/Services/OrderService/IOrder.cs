@@ -5,11 +5,13 @@ namespace UrbanLoom_B.Services.OrderService
     public interface IOrder
     {
 
+        Task<string> OrderCreate(long price);
+        public bool Payment(RazorpayDto razorpay);
+
         /// BUY FROM CART ///
         Task<bool> CreateOrderFromCart(string token, OrderRequestDto orderRequest);
 
-        /// BUY FROM SHOP ///
-        Task<bool> CreateOrderFromShop(string token , OrderRequestDto orderRequest , int productid);
+        Task<List<OrderViewDto>> GetOrderDtails(string token);
 
         /// ADMIN ///
         Task<List<OrderAdminView>> AdminGetAllOrders();

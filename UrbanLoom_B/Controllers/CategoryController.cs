@@ -31,7 +31,7 @@ namespace UrbanLoom_B.Controllers
         }
 
         [HttpGet("CATEGORY")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetCatById(int id)
         {
             try

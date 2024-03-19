@@ -129,7 +129,6 @@ namespace UrbanLoom_B.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-           
         }
 
         [HttpPut("UNBLOCK-USER")]
@@ -154,7 +153,6 @@ namespace UrbanLoom_B.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
 
         private string GenerateToken(User users)
@@ -168,13 +166,12 @@ namespace UrbanLoom_B.Controllers
             new Claim(ClaimTypes.Name, users.Name),
             new Claim(ClaimTypes.Role, users.Role),
             new Claim(ClaimTypes.Email, users.Mail),
-        };
+            };
 
             var Token = new JwtSecurityToken(
                 claims: claims,
                 signingCredentials: credentials,
                 expires: DateTime.UtcNow.AddHours(1)
-
             );
 
             return new JwtSecurityTokenHandler().WriteToken(Token);

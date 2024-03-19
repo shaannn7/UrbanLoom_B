@@ -16,6 +16,52 @@ namespace UrbanLoom_B.Controllers
             _order = order;
         }
 
+
+        [HttpPost("order-create")]
+        [Authorize]
+        public async Task<ActionResult> createOrder(long price)
+        {
+            try
+            {
+                if (price <= 0)
+                {
+                    return BadRequest("enter a valid money ");
+                }
+                var orderId = await _order.OrderCreate(price);
+                return Ok(orderId);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+
+        }
+
+
+        [HttpPost("payment")]
+        [Authorize]
+        public ActionResult Payment(RazorpayDto razorpay)
+        {
+            try
+            {
+                if (razorpay == null)
+                {
+                    return BadRequest("razorpay details must not null here");
+                }
+                var con = _order.Payment(razorpay);
+                return Ok(con);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+
+        }
+
+
+
+
         ///   BUY FROM CART ///
 
         [HttpPost("PLACE ORDER (CART)")]
@@ -40,29 +86,25 @@ namespace UrbanLoom_B.Controllers
             }
         }
 
-        ///   BUY FROM SHOP ///
-       
-        [HttpPost("PLACE ORDER (SHOP)")]
+        [HttpGet("GetOrdersDetails")]
         [Authorize]
-        public async Task<ActionResult> PlaceOrderfromshop([FromBody] OrderRequestDto orderRequestDto , int productid)
+        public async Task<ActionResult> GetOrderDetails()
         {
             try
             {
                 var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-                var splittoken = token.Split(" ");
-                var jwt = splittoken[1];
-
-                if (jwt == null || orderRequestDto == null)
+                var splitToken = token.Split(' ');
+                var jwtToken = splitToken[1];
+                if (jwtToken == null)
                 {
                     return BadRequest();
                 }
+                return Ok(await _order.GetOrderDtails(jwtToken));
 
-                var orderstatus = await _order.CreateOrderFromShop(jwt, orderRequestDto , productid);
-                return Ok("Item Ordered Sucessfully");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, e.Message);
             }
         }
 

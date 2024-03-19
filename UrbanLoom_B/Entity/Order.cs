@@ -21,6 +21,10 @@ namespace UrbanLoom_B.Entity
         public string HomeAddress { get; set; }
         [Required]
         public string OrderStatus { get; set; }
+        [Required]
+        public string TransactionId { get; set; }
+        [Required]
+        public string OrderString { get; set; }
 
 
         public User users { get; set; }

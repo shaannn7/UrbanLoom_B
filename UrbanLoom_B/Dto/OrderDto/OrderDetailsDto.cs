@@ -12,5 +12,9 @@ namespace UrbanLoom_B.Dto.OrderDto
 
         [NotMapped]
         public string OrderId { get; set; }
+
+        [NotMapped]
+
+        public string TransactionId { get; set; }
     }
 }
