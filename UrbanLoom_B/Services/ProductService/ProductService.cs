@@ -55,8 +55,7 @@ namespace UrbanLoom_B.Services.ProductService
                     ProductName = product.ProductName,
                     ProductDescription = product.ProductDescription,
                     Price = product.Price,
-                    CatagoryName = product.category.CatagoryName
-
+                    CategoryId = product.CategoryId
                 };
                 return productView;
             }

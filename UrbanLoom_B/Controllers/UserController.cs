@@ -88,7 +88,7 @@ namespace UrbanLoom_B.Controllers
             }
         }
 
-        [HttpGet("USER = {id}")]
+        [HttpGet("USER={id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult>GetUserbyID(int id)
         {

@@ -8,5 +8,6 @@
         public decimal Price { get; set; }
         public string ProductImage { get; set; }
         public string CatagoryName { get; set; }
+        public int CategoryId { get; set; }
     }
 }

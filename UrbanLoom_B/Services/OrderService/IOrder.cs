@@ -6,7 +6,7 @@ namespace UrbanLoom_B.Services.OrderService
     {
 
         Task<string> OrderCreate(long price);
-        public bool Payment(RazorpayDto razorpay);
+        public bool Payment(RazorpayDto razorpay);  
 
         /// BUY FROM CART ///
         Task<bool> CreateOrderFromCart(string token, OrderRequestDto orderRequest);
